@@ -29,6 +29,10 @@
 #include "globals.h"
 #include "locks.h"
 
+#if defined(__FreeBSD__)
+#define __APPLE__
+#endif 
+
 #if defined(__APPLE__)
 #define ART_USE_FUTEXES 0
 #else
