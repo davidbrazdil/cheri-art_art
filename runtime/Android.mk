@@ -363,8 +363,11 @@ $$(ENUM_OPERATOR_OUT_GEN): $$(GENERATED_SRC_DIR)/%_operator_out.cc : $(LOCAL_PAT
   LOCAL_SHARED_LIBRARIES += liblog libnativehelper
   LOCAL_SHARED_LIBRARIES += libbacktrace # native stack trace support
   ifeq ($$(art_target_or_host),target)
-    LOCAL_SHARED_LIBRARIES += libcutils libdl libselinux libutils
+    LOCAL_SHARED_LIBRARIES += libcutils libutils
     LOCAL_STATIC_LIBRARIES := libziparchive libz
+    ifneq ($(TARGET_ARCH_VARIANT),cheri)
+      LOCAL_SHARED_LIBRARIES += libdl libselinux
+    endif # TARGET_ARCH_VARIANT != cheri
   else # host
     LOCAL_STATIC_LIBRARIES += libcutils libziparchive-host libz libutils
     LOCAL_LDLIBS += -ldl -lpthread
