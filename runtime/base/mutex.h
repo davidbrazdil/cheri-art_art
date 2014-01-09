@@ -29,18 +29,14 @@
 #include "globals.h"
 #include "locks.h"
 
-#if defined(__FreeBSD__)
-#define __APPLE__
-#endif 
-
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__FreeBSD__)
 #define ART_USE_FUTEXES 0
 #else
 #define ART_USE_FUTEXES 1
 #endif
 
 // Currently Darwin doesn't support locks with timeouts.
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) || defined(__FreeBSD__)
 #define HAVE_TIMED_RWLOCK 1
 #else
 #define HAVE_TIMED_RWLOCK 0

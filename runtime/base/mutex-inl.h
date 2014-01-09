@@ -71,6 +71,38 @@ struct __attribute__((__may_alias__)) darwin_pthread_rwlock_t {
 
 #endif  // __APPLE__
 
+#if defined(__FreeBSD__)
+
+// structures taken from cheribsd/release/dist/base/usr/include/sys/_umtx.h and
+// cheribsd/lib/libthr/thread/thr_private.h
+
+struct __attribute__((__may_alias__)) bsd_pthread_mutex_t {
+    __lwpid_t               m_owner;
+    __uint32_t              m_flags;
+    __uint32_t              m_ceilings[2];
+    __uint32_t              m_spare[4];
+    int				        m_flags_;
+    pthread_t               bsd_pthread_mutex_owner;
+    // ...other stuff we don't care about.
+};
+
+struct __attribute__((__may_alias__)) bsd_pthread_rwlock_t {
+    __int32_t               rw_state;
+    __uint32_t              rw_flags;
+    __uint32_t              rw_blocked_readers;
+    __uint32_t              rw_blocked_writers;
+    __uint32_t              rw_spare[4];
+    pthread_t               bsd_pthread_rwlock_owner;
+  // ...other stuff we don't care about.
+};
+
+struct __attribute__((__may_alias__)) bsd_pthread_t {
+	long                    tid;
+    // ...other stuff we don't care about.
+};
+
+#endif // __FreeBSD__
+
 #if defined(__GLIBC__)
 
 struct __attribute__((__may_alias__)) glibc_pthread_mutex_t {
@@ -254,6 +286,14 @@ inline uint64_t Mutex::GetExclusiveOwnerTid() const {
   return static_cast<uint64_t>((mutex_.value >> 16) & 0xffff);
 #elif defined(__GLIBC__)
   return reinterpret_cast<const glibc_pthread_mutex_t*>(&mutex_)->owner;
+#elif defined(__FreeBSD__)
+  const bsd_pthread_mutex_t* dpmutex = reinterpret_cast<const bsd_pthread_mutex_t*>(&mutex_);
+  pthread_t owner = dpmutex->bsd_pthread_mutex_owner;
+  // 0 for unowned, -1 for PTHREAD_MTX_TID_SWITCHING
+  if ((owner == (pthread_t)0) || (owner == (pthread_t)-1))
+    return 0;
+  const bsd_pthread_t* dpowner = reinterpret_cast<const bsd_pthread_t*>(&owner);
+  return dpowner->tid;
 #elif defined(__APPLE__)
   const darwin_pthread_mutex_t* dpmutex = reinterpret_cast<const darwin_pthread_mutex_t*>(&mutex_);
   pthread_t owner = dpmutex->darwin_pthread_mutex_owner;
@@ -297,6 +337,14 @@ inline uint64_t ReaderWriterMutex::GetExclusiveOwnerTid() const {
   return rwlock_.writerThreadId;
 #elif defined(__GLIBC__)
   return reinterpret_cast<const glibc_pthread_rwlock_t*>(&rwlock_)->writer;
+#elif defined(__FreeBSD__)
+  const bsd_pthread_rwlock_t*
+      dprwlock = reinterpret_cast<const bsd_pthread_rwlock_t*>(&rwlock_);
+  pthread_t owner = dprwlock->bsd_pthread_rwlock_owner;
+  if ((owner == (pthread_t)0) || (owner == (pthread_t)-1))
+    return 0;
+  const bsd_pthread_t* dpowner = reinterpret_cast<const bsd_pthread_t*>(&owner);
+  return dpowner->tid;
 #elif defined(__APPLE__)
   const darwin_pthread_rwlock_t*
       dprwlock = reinterpret_cast<const darwin_pthread_rwlock_t*>(&rwlock_);
