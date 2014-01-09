@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <algorithm>
 #include <string>
+#include <portability.h>
 
 namespace unix_file {
 
