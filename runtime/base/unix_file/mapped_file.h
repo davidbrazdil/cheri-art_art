@@ -23,6 +23,10 @@
 
 namespace unix_file {
 
+#ifdef __FreeBSD__
+#define O_LARGEFILE 0
+#endif
+
 // Random access file which handles an mmap(2), munmap(2) pair in C++
 // RAII style. When a file is mmapped, the random access file
 // interface accesses the mmapped memory directly; otherwise, the
