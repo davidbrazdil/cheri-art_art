@@ -33,7 +33,7 @@ static void art_heap_usage_error(const char* function, void* p);
 // mspaces (regular dlmalloc is still declared in bionic).
 #pragma GCC diagnostic ignored "-Wempty-body"
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#include "../../../bionic/libc/upstream-dlmalloc/malloc.c"
+#include "dlmalloc/malloc.c"
 #pragma GCC diagnostic warning "-Wstrict-aliasing"
 #pragma GCC diagnostic warning "-Wempty-body"
 

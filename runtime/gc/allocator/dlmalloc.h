@@ -28,7 +28,7 @@
 #define ONLY_MSPACES 1
 #define MALLOC_INSPECT_ALL 1
 
-#include "../../bionic/libc/upstream-dlmalloc/malloc.h"
+#include "dlmalloc/malloc.h"
 
 // Define dlmalloc routines from bionic that cannot be included directly because of redefining
 // symbols from the include above.
