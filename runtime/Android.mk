@@ -227,8 +227,11 @@ LIBART_TARGET_SRC_FILES += \
 	arch/mips/entrypoints_init_mips.cc \
 	arch/mips/jni_entrypoints_mips.S \
 	arch/mips/portable_entrypoints_mips.S \
-	arch/mips/quick_entrypoints_mips.S \
 	arch/mips/thread_mips.cc
+ifneq ($(TARGET_ARCH_VARIANT),cheri)
+LIBART_TARGET_SRC_FILES += \
+    arch/mips/quick_entrypoints_mips.S 
+endif # TARGET_ARCH_VARIANT != cheri
 else # TARGET_ARCH != mips
 ifeq ($(TARGET_ARCH),arm64)
 $(info TODOArm64: $(LOCAL_PATH)/Android.mk Add Arm64 specific runtime files)
