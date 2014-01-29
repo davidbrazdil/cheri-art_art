@@ -197,9 +197,14 @@ LIBART_TARGET_SRC_FILES += \
 	arch/arm/entrypoints_init_arm.cc \
 	arch/arm/jni_entrypoints_arm.S \
 	arch/arm/portable_entrypoints_arm.S \
-	arch/arm/quick_entrypoints_arm.S \
 	arch/arm/arm_sdiv.S \
 	arch/arm/thread_arm.cc
+
+ifneq ($(TARGET_ARCH_VARIANT),cheri)
+LIBART_TARGET_SRC_FILES += \
+	arch/mips/quick_entrypoints_mips.S 
+endif # TARGET_ARCH_VARIANT != cheri
+
 else # TARGET_ARCH != arm
 ifeq ($(TARGET_ARCH),x86)
 LIBART_TARGET_SRC_FILES += \
