@@ -525,7 +525,7 @@ class Hprof {
       // U4: stack trace serial number
       // ID: class name string ID
       rec->AddU4(nextSerialNumber++);
-      rec->AddId((HprofClassObjectId) c);
+      rec->AddId((HprofClassObjectId) PTR_TO_UINT(c));
       rec->AddU4(HPROF_NULL_STACK_TRACE);
       rec->AddId(LookupClassNameId(c));
     }
@@ -587,7 +587,7 @@ class Hprof {
     LookupClassNameId(c);
 
     CHECK_EQ(present, c);
-    return (HprofStringId) present;
+    return (HprofStringId) PTR_TO_UINT(present);
   }
 
   HprofStringId LookupStringId(mirror::String* string) {
@@ -689,7 +689,7 @@ class Hprof {
 // for class static overhead.
 #define STATIC_OVERHEAD_NAME    "$staticOverhead"
 // The ID for the synthetic object generated to account for class static overhead.
-#define CLASS_STATICS_ID(c) ((HprofObjectId)(((uint32_t)(c)) | 1))
+#define CLASS_STATICS_ID(c) ((HprofObjectId)((PTR_TO_UINT(c)) | 1))
 
 static HprofBasicType SignatureToBasicTypeAndSize(const char* sig, size_t* sizeOut) {
   char c = sig[0];
@@ -765,15 +765,15 @@ int Hprof::MarkRootObject(const mirror::Object* obj, jobject jniObj) {
   case HPROF_ROOT_DEBUGGER:
   case HPROF_ROOT_VM_INTERNAL:
     rec->AddU1(heapTag);
-    rec->AddId((HprofObjectId)obj);
+    rec->AddId((HprofObjectId) PTR_TO_UINT(obj));
     break;
 
   // ID: object ID
   // ID: JNI global ref ID
   case HPROF_ROOT_JNI_GLOBAL:
     rec->AddU1(heapTag);
-    rec->AddId((HprofObjectId)obj);
-    rec->AddId((HprofId)jniObj);
+    rec->AddId((HprofObjectId) PTR_TO_UINT(obj));
+    rec->AddId((HprofId) PTR_TO_UINT(jniObj));
     break;
 
   // ID: object ID
@@ -783,7 +783,7 @@ int Hprof::MarkRootObject(const mirror::Object* obj, jobject jniObj) {
   case HPROF_ROOT_JNI_MONITOR:
   case HPROF_ROOT_JAVA_FRAME:
     rec->AddU1(heapTag);
-    rec->AddId((HprofObjectId)obj);
+    rec->AddId((HprofObjectId) PTR_TO_UINT(obj));
     rec->AddU4(gc_thread_serial_number_);
     rec->AddU4((uint32_t)-1);
     break;
@@ -793,7 +793,7 @@ int Hprof::MarkRootObject(const mirror::Object* obj, jobject jniObj) {
   case HPROF_ROOT_NATIVE_STACK:
   case HPROF_ROOT_THREAD_BLOCK:
     rec->AddU1(heapTag);
-    rec->AddId((HprofObjectId)obj);
+    rec->AddId((HprofObjectId) PTR_TO_UINT(obj));
     rec->AddU4(gc_thread_serial_number_);
     break;
 
@@ -802,7 +802,7 @@ int Hprof::MarkRootObject(const mirror::Object* obj, jobject jniObj) {
   // U4: stack trace serial number
   case HPROF_ROOT_THREAD_OBJECT:
     rec->AddU1(heapTag);
-    rec->AddId((HprofObjectId)obj);
+    rec->AddId((HprofObjectId) PTR_TO_UINT(obj));
     rec->AddU4(gc_thread_serial_number_);
     rec->AddU4((uint32_t)-1);    // xxx
     break;
@@ -892,7 +892,7 @@ int Hprof::DumpHeapObject(mirror::Object* obj) {
       rec->AddId(LookupClassId(thisClass));
       rec->AddU4(StackTraceSerialNumber(thisClass));
       rec->AddId(LookupClassId(thisClass->GetSuperClass()));
-      rec->AddId((HprofObjectId)thisClass->GetClassLoader());
+      rec->AddId((HprofObjectId) PTR_TO_UINT(thisClass->GetClassLoader()));
       rec->AddId((HprofObjectId)0);    // no signer
       rec->AddId((HprofObjectId)0);    // no prot domain
       rec->AddId((HprofId)0);           // reserved
@@ -960,7 +960,7 @@ int Hprof::DumpHeapObject(mirror::Object* obj) {
         // obj is an object array.
         rec->AddU1(HPROF_OBJECT_ARRAY_DUMP);
 
-        rec->AddId((HprofObjectId)obj);
+        rec->AddId((HprofObjectId) PTR_TO_UINT(obj));
         rec->AddU4(StackTraceSerialNumber(obj));
         rec->AddU4(length);
         rec->AddId(LookupClassId(c));
@@ -974,7 +974,7 @@ int Hprof::DumpHeapObject(mirror::Object* obj) {
         // obj is a primitive array.
         rec->AddU1(HPROF_PRIMITIVE_ARRAY_DUMP);
 
-        rec->AddId((HprofObjectId)obj);
+        rec->AddId((HprofObjectId) PTR_TO_UINT(obj));
         rec->AddU4(StackTraceSerialNumber(obj));
         rec->AddU4(length);
         rec->AddU1(t);
@@ -993,7 +993,7 @@ int Hprof::DumpHeapObject(mirror::Object* obj) {
     } else {
       // obj is an instance object.
       rec->AddU1(HPROF_INSTANCE_DUMP);
-      rec->AddId((HprofObjectId)obj);
+      rec->AddId((HprofObjectId) PTR_TO_UINT(obj));
       rec->AddU4(StackTraceSerialNumber(obj));
       rec->AddId(LookupClassId(c));
 

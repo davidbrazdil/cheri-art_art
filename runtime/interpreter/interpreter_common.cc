@@ -30,7 +30,7 @@ static inline void AssignRegister(ShadowFrame& new_shadow_frame, const ShadowFra
   // If both register locations contains the same value, the register probably holds a reference.
   int32_t src_value = shadow_frame.GetVReg(src_reg);
   mirror::Object* o = shadow_frame.GetVRegReference<false>(src_reg);
-  if (src_value == reinterpret_cast<int32_t>(o)) {
+  if (src_value == PTR_TO_UINT(o)) {
     new_shadow_frame.SetVRegReference(dest_reg, o);
   } else {
     new_shadow_frame.SetVReg(dest_reg, src_value);
@@ -289,7 +289,7 @@ static void UnstartedRuntimeInvoke(Thread* self, MethodHelper& mh,
     CHECK(field.get() != NULL);
     ArtMethod* c = jlr_Field->FindDeclaredDirectMethod("<init>", "(Ljava/lang/reflect/ArtField;)V");
     uint32_t args[1];
-    args[0] = reinterpret_cast<uint32_t>(found);
+    args[0] = PTR_TO_UINT(found);
     EnterInterpreterFromInvoke(self, c, field.get(), args, NULL);
     result->SetL(field.get());
   } else if (name == "void java.lang.System.arraycopy(java.lang.Object, int, java.lang.Object, int, int)" ||
