@@ -94,7 +94,7 @@ class ArgArray {
       SHARED_LOCKS_REQUIRED(Locks::mutator_lock_) {
     // Set receiver if non-null (method is not static)
     if (receiver != NULL) {
-      Append(reinterpret_cast<int32_t>(receiver));
+      Append(PTR_TO_UINT(receiver));
     }
     for (size_t i = 1; i < shorty_len_; ++i) {
       switch (shorty_[i]) {
@@ -112,7 +112,7 @@ class ArgArray {
           break;
         }
         case 'L':
-          Append(reinterpret_cast<int32_t>(soa.Decode<mirror::Object*>(va_arg(ap, jobject))));
+          Append(PTR_TO_UINT(soa.Decode<mirror::Object*>(va_arg(ap, jobject))));
           break;
         case 'D': {
           JValue value;
@@ -132,7 +132,7 @@ class ArgArray {
       SHARED_LOCKS_REQUIRED(Locks::mutator_lock_) {
     // Set receiver if non-null (method is not static)
     if (receiver != NULL) {
-      Append(reinterpret_cast<int32_t>(receiver));
+      Append(PTR_TO_UINT(receiver));
     }
     for (size_t i = 1, args_offset = 0; i < shorty_len_; ++i, ++args_offset) {
       switch (shorty_[i]) {
@@ -153,7 +153,7 @@ class ArgArray {
           Append(args[args_offset].i);
           break;
         case 'L':
-          Append(reinterpret_cast<int32_t>(soa.Decode<mirror::Object*>(args[args_offset].l)));
+          Append(PTR_TO_UINT(soa.Decode<mirror::Object*>(args[args_offset].l)));
           break;
         case 'D':
         case 'J':
