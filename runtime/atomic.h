@@ -78,7 +78,9 @@ class QuasiAtomic {
   }
 
   static void MembarLoadStore() {
-  #if defined(__arm__)
+  #if __has_builtin(__c11_atomic_thread_fence)
+    __c11_atomic_thread_fence(__ATOMIC_SEQ_CST);
+  #elif defined(__arm__)
     __asm__ __volatile__("dmb ish" : : : "memory");
   #elif defined(__i386__)
     __asm__ __volatile__("" : : : "memory");
@@ -90,7 +92,9 @@ class QuasiAtomic {
   }
 
   static void MembarLoadLoad() {
-  #if defined(__arm__)
+  #if __has_builtin(__c11_atomic_thread_fence)
+    __c11_atomic_thread_fence(__ATOMIC_SEQ_CST);
+  #elif defined(__arm__)
     __asm__ __volatile__("dmb ish" : : : "memory");
   #elif defined(__i386__)
     __asm__ __volatile__("" : : : "memory");
@@ -102,7 +106,9 @@ class QuasiAtomic {
   }
 
   static void MembarStoreStore() {
-  #if defined(__arm__)
+  #if __has_builtin(__c11_atomic_thread_fence)
+    __c11_atomic_thread_fence(__ATOMIC_SEQ_CST);
+  #elif defined(__arm__)
     __asm__ __volatile__("dmb ishst" : : : "memory");
   #elif defined(__i386__)
     __asm__ __volatile__("" : : : "memory");
@@ -114,7 +120,9 @@ class QuasiAtomic {
   }
 
   static void MembarStoreLoad() {
-  #if defined(__arm__)
+  #if __has_builtin(__c11_atomic_thread_fence)
+    __c11_atomic_thread_fence(__ATOMIC_SEQ_CST);
+  #elif defined(__arm__)
     __asm__ __volatile__("dmb ish" : : : "memory");
   #elif defined(__i386__)
     __asm__ __volatile__("mfence" : : : "memory");
