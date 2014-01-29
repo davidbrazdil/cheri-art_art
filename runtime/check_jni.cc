@@ -1333,7 +1333,7 @@ class CheckJNI {
         CHECK_JNI_ENTRY(kFlag_Default, "Ecf" _type, env, c, fid, value); \
         sc.CheckStaticFieldID(c, fid); \
         /* "value" arg only used when type == ref */ \
-        sc.CheckFieldType((jobject)(uint32_t)value, fid, _type[0], true); \
+        sc.CheckFieldType((jobject) PTR_TO_UINT(value), fid, _type[0], true); \
         baseEnv(env)->SetStatic##_jname##Field(env, c, fid, value); \
         CHECK_JNI_EXIT_VOID(); \
     } \
@@ -1341,7 +1341,7 @@ class CheckJNI {
         CHECK_JNI_ENTRY(kFlag_Default, "ELf" _type, env, obj, fid, value); \
         sc.CheckInstanceFieldID(obj, fid); \
         /* "value" arg only used when type == ref */ \
-        sc.CheckFieldType((jobject)(uint32_t) value, fid, _type[0], false); \
+        sc.CheckFieldType((jobject) PTR_TO_UINT(value), fid, _type[0], false); \
         baseEnv(env)->Set##_jname##Field(env, obj, fid, value); \
         CHECK_JNI_EXIT_VOID(); \
     }

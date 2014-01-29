@@ -718,7 +718,7 @@ const DexFile* ClassLinker::FindDexFileInOatLocation(const char* dex_location,
     return nullptr;
   }
 
-  uint32_t expected_image_oat_offset = reinterpret_cast<uint32_t>(image_header.GetOatDataBegin());
+  uint32_t expected_image_oat_offset = PTR_TO_UINT(image_header.GetOatDataBegin());
   uint32_t actual_image_oat_offset = oat_file->GetOatHeader().GetImageFileLocationOatDataBegin();
   if (expected_image_oat_offset != actual_image_oat_offset) {
     *error_msg = StringPrintf("Failed to find oat file at '%s' with expected image oat offset %ud, "
@@ -878,7 +878,7 @@ bool ClassLinker::VerifyOatFileChecksums(const OatFile* oat_file,
   Runtime* runtime = Runtime::Current();
   const ImageHeader& image_header = runtime->GetHeap()->GetImageSpace()->GetImageHeader();
   uint32_t image_oat_checksum = image_header.GetOatChecksum();
-  uint32_t image_oat_data_begin = reinterpret_cast<uint32_t>(image_header.GetOatDataBegin());
+  uint32_t image_oat_data_begin = PTR_TO_UINT(image_header.GetOatDataBegin());
   bool image_check = ((oat_file->GetOatHeader().GetImageFileLocationOatChecksum() == image_oat_checksum)
                       && (oat_file->GetOatHeader().GetImageFileLocationOatDataBegin() == image_oat_data_begin));
 

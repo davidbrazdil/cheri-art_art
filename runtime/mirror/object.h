@@ -175,7 +175,7 @@ class MANAGED Object {
   void SetFieldObject(MemberOffset field_offset, const Object* new_value, bool is_volatile,
                       bool this_is_valid = true) SHARED_LOCKS_REQUIRED(Locks::mutator_lock_) {
     VerifyObject(new_value);
-    SetField32(field_offset, reinterpret_cast<uint32_t>(new_value), is_volatile, this_is_valid);
+    SetField32(field_offset, PTR_TO_UINT(new_value), is_volatile, this_is_valid);
     if (new_value != NULL) {
       CheckFieldAssignment(field_offset, new_value);
       WriteBarrierField(this, field_offset, new_value);
@@ -200,7 +200,7 @@ class MANAGED Object {
 
   template<typename T>
   void SetFieldPtr(MemberOffset field_offset, T new_value, bool is_volatile, bool this_is_valid = true) {
-    SetField32(field_offset, reinterpret_cast<uint32_t>(new_value), is_volatile, this_is_valid);
+    SetField32(field_offset, PTR_TO_UINT(new_value), is_volatile, this_is_valid);
   }
 
  protected:
