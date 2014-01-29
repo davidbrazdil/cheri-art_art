@@ -57,12 +57,12 @@ static struct AllMutexData gAllMutexData[kAllMutexDataSize];
 class ScopedAllMutexesLock {
  public:
   explicit ScopedAllMutexesLock(const BaseMutex* mutex) : mutex_(mutex) {
-    while (!gAllMutexData->all_mutexes_guard.CompareAndSwap(0, reinterpret_cast<int32_t>(mutex))) {
+    while (!gAllMutexData->all_mutexes_guard.CompareAndSwap(0, PTR_TO_UINT(mutex))) {
       NanoSleep(100);
     }
   }
   ~ScopedAllMutexesLock() {
-    while (!gAllMutexData->all_mutexes_guard.CompareAndSwap(reinterpret_cast<int32_t>(mutex_), 0)) {
+    while (!gAllMutexData->all_mutexes_guard.CompareAndSwap(PTR_TO_UINT(mutex_), 0)) {
       NanoSleep(100);
     }
   }

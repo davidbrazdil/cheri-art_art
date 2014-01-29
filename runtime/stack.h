@@ -160,7 +160,7 @@ class ShadowFrame {
                                     << ") is in protected space, reference array " << true;
       }
       // If the vreg reference is not equal to the vreg then the vreg reference is stale.
-      if (UNLIKELY(reinterpret_cast<uint32_t>(ref) != vregs_[i])) {
+      if (UNLIKELY(PTR_TO_UINT(ref) != vregs_[i])) {
         return nullptr;
       }
       return ref;
