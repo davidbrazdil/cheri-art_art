@@ -17,6 +17,8 @@
 #ifndef ART_RUNTIME_BASE_MACROS_H_
 #define ART_RUNTIME_BASE_MACROS_H_
 
+#include <assert.h>
+#include <stdint.h>
 #include <stddef.h>  // for size_t
 
 #define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
@@ -212,5 +214,11 @@ template<typename T> void UNUSED(const T&) {}
 #define UNLOCK_FUNCTION(...)
 
 #endif  // defined(__SUPPORT_TS_ANNOTATION__)
+
+#ifdef __CHERI__
+    #define PTR_TO_UINT(ptr)              (assert((reinterpret_cast<uint64_t>(ptr) >> 32) == 0), (uint32_t) ((uintptr_t) (ptr)))
+#else
+    #define PTR_TO_UINT(ptr)              (reinterpret_cast<uint32_t>(ptr))
+#endif
 
 #endif  // ART_RUNTIME_BASE_MACROS_H_
