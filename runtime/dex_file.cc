@@ -59,9 +59,7 @@ DexFile::ClassPathEntry DexFile::FindInClassPath(const char* descriptor,
       return ClassPathEntry(dex_file, dex_class_def);
     }
   }
-  // TODO: remove reinterpret_cast when issue with -std=gnu++0x host issue resolved
-  return ClassPathEntry(reinterpret_cast<const DexFile*>(NULL),
-                        reinterpret_cast<const DexFile::ClassDef*>(NULL));
+  return ClassPathEntry(NULL, NULL);
 }
 
 static int OpenAndReadMagic(const char* filename, uint32_t* magic, std::string* error_msg) {
