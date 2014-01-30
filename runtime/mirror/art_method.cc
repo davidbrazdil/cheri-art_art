@@ -274,7 +274,7 @@ void ArtMethod::Invoke(Thread* self, uint32_t* args, uint32_t args_size, JValue*
 #else
       (*art_quick_invoke_stub)(this, args, args_size, self, result, result_type);
 #endif
-      if (UNLIKELY(reinterpret_cast<int32_t>(self->GetException(NULL)) == -1)) {
+      if (UNLIKELY(PTR_TO_UINT(self->GetException(NULL)) == -1)) {
         // Unusual case where we were running LLVM generated code and an
         // exception was thrown to force the activations to be removed from the
         // stack. Continue execution in the interpreter.
