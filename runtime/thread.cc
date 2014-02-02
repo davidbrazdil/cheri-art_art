@@ -261,7 +261,7 @@ void Thread::CreateNativeThread(JNIEnv* env, jobject java_peer, size_t stack_siz
   // Thread.start is synchronized, so we know that nativePeer is 0, and know that we're not racing to
   // assign it.
   env->SetIntField(java_peer, WellKnownClasses::java_lang_Thread_nativePeer,
-                   reinterpret_cast<jint>(PTR_TO_UINT(child_thread)));
+                   PTR_TO_UINT(child_thread));
 
   pthread_t new_pthread;
   pthread_attr_t attr;
@@ -389,7 +389,7 @@ void Thread::CreatePeer(const char* name, bool as_daemon, jobject thread_group) 
   Thread* self = this;
   DCHECK_EQ(self, Thread::Current());
   jni_env_->SetIntField(peer.get(), WellKnownClasses::java_lang_Thread_nativePeer,
-                        reinterpret_cast<jint>(PTR_TO_UINT(self)));
+                        PTR_TO_UINT(self));
 
   ScopedObjectAccess soa(self);
   SirtRef<mirror::String> peer_thread_name(soa.Self(), GetThreadName(soa));
