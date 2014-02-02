@@ -260,7 +260,7 @@ static void System_arraycopy(JNIEnv* env, jclass, jobject javaSrc, jint srcPos, 
   const uint8_t* srcBytes = reinterpret_cast<const uint8_t*>(srcArray->GetRawData(width));
   if (dstArray == srcArray || dstComponentType->IsAssignableFrom(srcComponentType)) {
     // Yes. Bulk copy.
-    COMPILE_ASSERT(sizeof(width) == sizeof(uint32_t), move32_assumes_Object_references_are_32_bit);
+    COMPILE_ASSERT(width == sizeof(uint32_t), move32_assumes_Object_references_are_32_bit);
     move32(dstBytes + dstPos * width, srcBytes + srcPos * width, length * width);
     Runtime::Current()->GetHeap()->WriteBarrierArray(dstArray, dstPos, length);
     return;
