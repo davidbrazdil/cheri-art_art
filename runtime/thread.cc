@@ -178,7 +178,7 @@ void* Thread::CreateCallback(void* arg) {
         receiver->GetClass()->FindVirtualMethodForVirtualOrInterface(soa.DecodeMethod(mid));
     JValue result;
     ArgArray arg_array(nullptr, 0);
-    arg_array.Append(reinterpret_cast<uint32_t>(receiver));
+    arg_array.Append(PTR_TO_UINT(receiver));
     m->Invoke(self, arg_array.GetArray(), arg_array.GetNumBytes(), &result, 'V');
   }
   // Detach and delete self.
@@ -261,7 +261,7 @@ void Thread::CreateNativeThread(JNIEnv* env, jobject java_peer, size_t stack_siz
   // Thread.start is synchronized, so we know that nativePeer is 0, and know that we're not racing to
   // assign it.
   env->SetIntField(java_peer, WellKnownClasses::java_lang_Thread_nativePeer,
-                   reinterpret_cast<jint>(child_thread));
+                   reinterpret_cast<jint>(PTR_TO_UINT(child_thread)));
 
   pthread_t new_pthread;
   pthread_attr_t attr;
@@ -389,7 +389,7 @@ void Thread::CreatePeer(const char* name, bool as_daemon, jobject thread_group) 
   Thread* self = this;
   DCHECK_EQ(self, Thread::Current());
   jni_env_->SetIntField(peer.get(), WellKnownClasses::java_lang_Thread_nativePeer,
-                        reinterpret_cast<jint>(self));
+                        reinterpret_cast<jint>(PTR_TO_UINT(self)));
 
   ScopedObjectAccess soa(self);
   SirtRef<mirror::String> peer_thread_name(soa.Self(), GetThreadName(soa));
@@ -1561,12 +1561,12 @@ void Thread::ThrowNewWrappedException(const ThrowLocation& throw_location,
     SetException(gc_safe_throw_location, exception.get());
   } else {
     ArgArray args("VLL", 3);
-    args.Append(reinterpret_cast<uint32_t>(exception.get()));
+    args.Append(PTR_TO_UINT(exception.get()));
     if (msg != nullptr) {
-      args.Append(reinterpret_cast<uint32_t>(msg_string.get()));
+      args.Append(PTR_TO_UINT(msg_string.get()));
     }
     if (cause.get() != nullptr) {
-      args.Append(reinterpret_cast<uint32_t>(cause.get()));
+      args.Append(PTR_TO_UINT(cause.get()));
     }
     JValue result;
     exception_init_method->Invoke(this, args.GetArray(), args.GetNumBytes(), &result, 'V');
@@ -1918,7 +1918,7 @@ class ReferenceMapVisitor : public StackVisitor {
                 if (ref != nullptr) {
                   mirror::Object* new_ref = visitor_(ref, reg, this);
                   if (ref != new_ref) {
-                    *reg_addr = reinterpret_cast<uint32_t>(new_ref);
+                    *reg_addr = PTR_TO_UINT(new_ref);
                   }
                 }
               }
