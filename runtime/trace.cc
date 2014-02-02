@@ -135,7 +135,7 @@ static TraceAction DecodeTraceAction(uint32_t tmid) {
 
 static uint32_t EncodeTraceMethodAndAction(const mirror::ArtMethod* method,
                                            TraceAction action) {
-  uint32_t tmid = reinterpret_cast<uint32_t>(method) | action;
+  uint32_t tmid = PTR_TO_UINT(method) | action;
   DCHECK_EQ(method, DecodeTraceMethodId(tmid));
   return tmid;
 }
@@ -298,7 +298,7 @@ void Trace::CompareAndUpdateStackTrace(Thread* thread,
 
 void* Trace::RunSamplingThread(void* arg) {
   Runtime* runtime = Runtime::Current();
-  int interval_us = reinterpret_cast<int>(arg);
+  int interval_us = PTR_TO_UINT(arg);
   CHECK_GE(interval_us, 0);
   CHECK(runtime->AttachCurrentThread("Sampling Profiler", true, runtime->GetSystemThreadGroup(),
                                      !runtime->IsCompiler()));

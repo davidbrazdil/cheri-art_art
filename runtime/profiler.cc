@@ -439,7 +439,7 @@ void ProfileSampleResults::Clear() {
 }
 
 uint32_t ProfileSampleResults::Hash(mirror::ArtMethod* method) {
-  uint32_t value = reinterpret_cast<uint32_t>(method);
+  uint32_t value = PTR_TO_UINT(method);
   value >>= 2;
   return value % kHashSize;
 }
