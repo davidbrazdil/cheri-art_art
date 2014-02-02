@@ -16,7 +16,13 @@
 
 // sys/mount.h has to come before linux/fs.h due to redefinition of MS_RDONLY, MS_BIND, etc
 #include <sys/mount.h>
+#ifdef __CHERI__
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#else
 #include <linux/fs.h>
+#endif
 
 #include <grp.h>
 #include <paths.h>
@@ -42,7 +48,9 @@
 #include <sys/prctl.h>
 #endif
 
+#ifndef __CHERI__
 #include <selinux/android.h>
+#endif
 
 #if defined(__linux__)
 #include <sys/personality.h>
@@ -312,6 +320,14 @@ static void EnableDebugFeatures(uint32_t debug_flags) {
 
 // Create a private mount namespace and bind mount appropriate emulated
 // storage for the given user.
+#ifdef __CHERI__
+
+static bool MountEmulatedStorage(uid_t uid, jint mount_mode) {
+  LOG(WARNING) << "MountEmulatedStorage: STUB";
+  return false;
+}
+
+#else
 static bool MountEmulatedStorage(uid_t uid, jint mount_mode) {
   if (mount_mode == MOUNT_EXTERNAL_NONE) {
     return true;
@@ -381,6 +397,7 @@ static bool MountEmulatedStorage(uid_t uid, jint mount_mode) {
 
   return true;
 }
+#endif
 
 #if defined(__linux__)
 static bool NeedsNoRandomizeWorkaround() {
