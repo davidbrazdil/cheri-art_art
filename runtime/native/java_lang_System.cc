@@ -258,10 +258,21 @@ static void System_arraycopy(JNIEnv* env, jclass, jobject javaSrc, jint srcPos, 
   const size_t width = sizeof(mirror::Object*);
   uint8_t* dstBytes = reinterpret_cast<uint8_t*>(dstArray->GetRawData(width));
   const uint8_t* srcBytes = reinterpret_cast<const uint8_t*>(srcArray->GetRawData(width));
+
+  mirror::Object* const * srcObjects =
+      reinterpret_cast<mirror::Object* const *>(srcBytes + srcPos * width);
+  mirror::Object** dstObjects = reinterpret_cast<mirror::Object**>(dstBytes + dstPos * width);
+
   if (dstArray == srcArray || dstComponentType->IsAssignableFrom(srcComponentType)) {
     // Yes. Bulk copy.
+#ifdef __CHERI__
+    for (int i = 0; i < length; ++i)
+      dstObjects[i] = srcObjects[i];
+#else
     COMPILE_ASSERT(width == sizeof(uint32_t), move32_assumes_Object_references_are_32_bit);
     move32(dstBytes + dstPos * width, srcBytes + srcPos * width, length * width);
+#endif
+
     Runtime::Current()->GetHeap()->WriteBarrierArray(dstArray, dstPos, length);
     return;
   }
@@ -275,9 +286,6 @@ static void System_arraycopy(JNIEnv* env, jclass, jobject javaSrc, jint srcPos, 
   // We already dealt with overlapping copies, so we don't need to cope with that case below.
   CHECK_NE(dstArray, srcArray);
 
-  mirror::Object* const * srcObjects =
-      reinterpret_cast<mirror::Object* const *>(srcBytes + srcPos * width);
-  mirror::Object** dstObjects = reinterpret_cast<mirror::Object**>(dstBytes + dstPos * width);
   mirror::Class* dstClass = dstArray->GetClass()->GetComponentType();
 
   // We want to avoid redundant IsAssignableFrom checks where possible, so we cache a class that
