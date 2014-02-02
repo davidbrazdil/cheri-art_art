@@ -18,7 +18,9 @@
 
 // sys/mount.h has to come before linux/fs.h due to redefinition of MS_RDONLY, MS_BIND, etc
 #include <sys/mount.h>
+#ifndef __CHERI__
 #include <linux/fs.h>
+#endif
 
 #include <signal.h>
 #include <sys/syscall.h>
@@ -858,6 +860,15 @@ void Runtime::EndThreadBirth() EXCLUSIVE_LOCKS_REQUIRED(Locks::runtime_shutdown_
 }
 
 // Do zygote-mode-only initialization.
+#ifdef __CHERI__
+
+bool Runtime::InitZygote() {
+  LOG(WARNING) << "InitZygote() is a stub";
+  return false;
+}
+
+#else
+
 bool Runtime::InitZygote() {
   // zygote goes into its own process group
   setpgid(0, 0);
@@ -890,6 +901,8 @@ bool Runtime::InitZygote() {
 
   return true;
 }
+
+#endif 
 
 void Runtime::DidForkFromZygote() {
   is_zygote_ = false;
