@@ -51,8 +51,8 @@ static jboolean Unsafe_compareAndSwapObject(JNIEnv* env, jobject, jobject javaOb
   byte* raw_addr = reinterpret_cast<byte*>(obj) + offset;
   int32_t* address = reinterpret_cast<int32_t*>(raw_addr);
   // Note: android_atomic_cmpxchg() returns 0 on success, not failure.
-  int result = android_atomic_release_cas(reinterpret_cast<int32_t>(expectedValue),
-      reinterpret_cast<int32_t>(newValue), address);
+  int result = android_atomic_release_cas(PTR_TO_UINT(expectedValue),
+      PTR_TO_UINT(newValue), address);
   if (result == 0) {
     Runtime::Current()->GetHeap()->WriteBarrierField(obj, MemberOffset(offset), newValue);
   }
