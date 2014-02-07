@@ -837,7 +837,7 @@ bool MethodVerifier::CheckArrayData(uint32_t cur_offset) {
   /* offset to array data table is a relative branch-style offset */
   array_data = insns + array_data_offset;
   /* make sure the table is 32-bit aligned */
-  if ((((uint32_t) array_data) & 0x03) != 0) {
+  if ((PTR_TO_UINT(array_data) & 0x03) != 0) {
     Fail(VERIFY_ERROR_BAD_CLASS_HARD) << "unaligned array data table: at " << cur_offset
                                       << ", data offset " << array_data_offset;
     return false;
@@ -941,7 +941,7 @@ bool MethodVerifier::CheckSwitchTargets(uint32_t cur_offset) {
   /* offset to switch table is a relative branch-style offset */
   const uint16_t* switch_insns = insns + switch_offset;
   /* make sure the table is 32-bit aligned */
-  if ((((uint32_t) switch_insns) & 0x03) != 0) {
+  if ((PTR_TO_UINT(switch_insns) & 0x03) != 0) {
     Fail(VERIFY_ERROR_BAD_CLASS_HARD) << "unaligned switch table: at " << cur_offset
                                       << ", switch offset " << switch_offset;
     return false;

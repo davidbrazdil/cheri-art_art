@@ -135,8 +135,8 @@ extern "C" uint64_t artInvokeInterfaceTrampoline(mirror::ArtMethod* interface_me
   }
 #endif
 
-  uint32_t method_uint = reinterpret_cast<uint32_t>(method);
-  uint64_t code_uint = reinterpret_cast<uint32_t>(code);
+  uint32_t method_uint = PTR_TO_UINT(method);
+  uint64_t code_uint = PTR_TO_UINT(code);
   uint64_t result = ((code_uint << 32) | method_uint);
   return result;
 }
@@ -167,8 +167,8 @@ uint64_t artInvokeCommon(uint32_t method_idx, mirror::Object* this_object,
   }
 #endif
 
-  uint32_t method_uint = reinterpret_cast<uint32_t>(method);
-  uint64_t code_uint = reinterpret_cast<uint32_t>(code);
+  uint32_t method_uint = PTR_TO_UINT(method);
+  uint64_t code_uint = PTR_TO_UINT(code);
   uint64_t result = ((code_uint << 32) | method_uint);
   return result;
 }
