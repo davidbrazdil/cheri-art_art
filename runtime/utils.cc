@@ -50,6 +50,10 @@
 #include <sys/syscall.h>
 #endif
 
+#ifdef __FreeBSD__
+#include <pthread_np.h>
+#endif
+
 #include <backtrace/Backtrace.h>  // For DumpNativeStack.
 
 #if defined(__linux__)
@@ -63,6 +67,8 @@ pid_t GetTid() {
   uint64_t owner;
   CHECK_PTHREAD_CALL(pthread_threadid_np, (NULL, &owner), __FUNCTION__);  // Requires Mac OS 10.6
   return owner;
+#elif defined(__FreeBSD__)
+  return pthread_getthreadid_np();
 #else
   // Neither bionic nor glibc exposes gettid(2).
   return syscall(__NR_gettid);
@@ -94,7 +100,11 @@ void GetThreadStack(pthread_t thread, void** stack_base, size_t* stack_size) {
   }
 #else
   pthread_attr_t attributes;
+#ifdef __FreeBSD__
+  CHECK_PTHREAD_CALL(pthread_attr_get_np, (thread, &attributes), __FUNCTION__);
+#else
   CHECK_PTHREAD_CALL(pthread_getattr_np, (thread, &attributes), __FUNCTION__);
+#endif
   CHECK_PTHREAD_CALL(pthread_attr_getstack, (&attributes, stack_base, stack_size), __FUNCTION__);
   CHECK_PTHREAD_CALL(pthread_attr_destroy, (&attributes), __FUNCTION__);
 #endif
@@ -186,7 +196,7 @@ void InitTimeSpec(bool absolute, int clock, int64_t ms, int32_t ns, timespec* ts
   int64_t endSec;
 
   if (absolute) {
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__)
     clock_gettime(clock, ts);
 #else
     UNUSED(clock);
@@ -1080,7 +1090,7 @@ void DumpNativeStack(std::ostream& os, pid_t tid, const char* prefix, bool inclu
   }
 }
 
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__FreeBSD__)
 
 // TODO: is there any way to get the kernel stack on Mac OS?
 void DumpKernelStack(std::ostream&, pid_t, const char*, bool) {}
