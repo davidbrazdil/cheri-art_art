@@ -23,7 +23,7 @@
 namespace art {
 namespace mips {
 
-static const uint32_t gZero = 0;
+static const uintptr_t gZero = 0;
 
 void MipsContext::Reset() {
   for (size_t i = 0; i < kNumberOfCoreRegisters; i++) {
@@ -61,7 +61,7 @@ void MipsContext::FillCalleeSaves(const StackVisitor& fr) {
     int j = 1;
     for (size_t i = 0; i < kNumberOfFRegisters; i++) {
       if (((fp_core_spills >> i) & 1) != 0) {
-        fprs_[i] = fr.CalleeSaveAddress(spill_count + fp_spill_count - j, frame_size);
+        fprs_[i] = reinterpret_cast<uint32_t*>(fr.CalleeSaveAddress(spill_count + fp_spill_count - j, frame_size));
         j++;
       }
     }
@@ -77,14 +77,18 @@ void MipsContext::SetGPR(uint32_t reg, uintptr_t value) {
 
 void MipsContext::SmashCallerSaves() {
   // This needs to be 0 because we want a null/zero return value.
-  gprs_[V0] = const_cast<uint32_t*>(&gZero);
-  gprs_[V1] = const_cast<uint32_t*>(&gZero);
+  gprs_[V0] = const_cast<uintptr_t*>(&gZero);
+  gprs_[V1] = const_cast<uintptr_t*>(&gZero);
   gprs_[A1] = NULL;
   gprs_[A2] = NULL;
   gprs_[A3] = NULL;
 }
 
+#ifdef __CHERI__
+extern "C" void art_quick_do_long_jump(uint64_t*, uint32_t*);
+#else
 extern "C" void art_quick_do_long_jump(uint32_t*, uint32_t*);
+#endif
 
 void MipsContext::DoLongJump() {
   uintptr_t gprs[kNumberOfCoreRegisters];
