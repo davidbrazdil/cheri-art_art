@@ -43,7 +43,9 @@ define build-libart-disassembler
 
   include $(CLEAR_VARS)
   ifeq ($$(art_target_or_host),target)
-    include external/stlport/libstlport.mk
+    ifneq ($(TARGET_ARCH_VARIANT),cheri)
+      include external/stlport/libstlport.mk
+    endif
   else
     LOCAL_IS_HOST_MODULE := true
   endif

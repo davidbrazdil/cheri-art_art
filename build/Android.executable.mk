@@ -51,7 +51,9 @@ define build-art-executable
 
   include $(CLEAR_VARS)
   ifeq ($$(art_target_or_host),target)
-    include external/stlport/libstlport.mk
+    ifneq ($(TARGET_ARCH_VARIANT),cheri)
+      include external/stlport/libstlport.mk
+    endif
   endif
 
   LOCAL_CPP_EXTENSION := $(ART_CPP_EXTENSION)

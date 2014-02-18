@@ -26,7 +26,9 @@ LOCAL_SRC_FILES := dalvikvm.cc
 LOCAL_CFLAGS := $(dalvikvm_cflags)
 LOCAL_SHARED_LIBRARIES := libdl libnativehelper
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
-include external/stlport/libstlport.mk
+ifneq ($(TARGET_ARCH_VARIANT),cheri)
+  include external/stlport/libstlport.mk
+endif
 include $(BUILD_EXECUTABLE)
 ART_TARGET_EXECUTABLES += $(TARGET_OUT_EXECUTABLES)/$(LOCAL_MODULE)
 
