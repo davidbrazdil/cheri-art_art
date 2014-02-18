@@ -30,7 +30,7 @@
 #include "utils.h"
 
 // A boilerplate to use hash_map/hash_set both on host and device.
-#if defined(HAVE_ANDROID_OS) || defined(__FreeBSD__)
+#if defined(HAVE_ANDROID_OS)
 #include <hash_map>
 #include <hash_set>
 using std::hash_map;
